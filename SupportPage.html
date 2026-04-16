@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - ZTT Computers Southampton</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('supportForm');
+            const emailInput = document.getElementById('email');
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            document.body.appendChild(notification);
+
+            // Email validation function
+            function isValidEmail(email) {
+                // Basic email format check
+                const basicFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!basicFormat.test(email)) {
+                    return {
+                        isValid: false,
+                        message: 'Please enter a valid email address'
+                    };
+                }
+
+                // Check for common typos in domain names
+                const commonDomains = {
+                    'gmial': 'gmail',
+                    'gmai': 'gmail',
+                    'hotmai': 'hotmail',
+                    'homtail': 'hotmail',
+                    'yahooo': 'yahoo',
+                    'yaho': 'yahoo',
+                    'outloo': 'outlook',
+                    'outlok': 'outlook'
+                };
+
+                const [localPart, domain] = email.split('@');
+                const [domainName] = domain.split('.');
+
+                // Check for common typos and suggest corrections
+                for (let typo in commonDomains) {
+                    if (domainName.toLowerCase() === typo) {
+                        return {
+                            isValid: false,
+                            message: `Did you mean ${localPart}@${commonDomains[typo]}.com?`
+                        };
+                    }
+                }
+
+                // Additional validation rules
+                if (email.includes('..')) {
+                    return {
+                        isValid: false,
+                        message: 'Email cannot contain consecutive dots'
+                    };
+                }
+
+                if (email.split('@').length > 2) {
+                    return {
+                        isValid: false,
+                        message: 'Email cannot contain multiple @ symbols'
+                    };
+                }
+
+                if (localPart.length < 2) {
+                    return {
+                        isValid: false,
+                        message: 'Email username is too short'
+                    };
+                }
+
+                if (email.length > 254) {
+                    return {
+                        isValid: false,
+                        message: 'Email address is too long'
+                    };
+                }
+
+                // Check for valid top-level domain
+                const validTLDs = ['.com', '.net', '.org', '.edu', '.gov', '.co.uk', '.ac.uk'];
+                const hasTLD = validTLDs.some(tld => email.toLowerCase().endsWith(tld));
+                if (!hasTLD) {
+                    return {
+                        isValid: false,
+                        message: 'Please use a common email domain (e.g., .com, .net, .org, .co.uk)'
+                    };
+                }
+
+                return {
+                    isValid: true,
+                    message: ''
+                };
+            }
+
+            // Show notification function
+            function showNotification(message, type) {
+                notification.textContent = message;
+                notification.className = 'notification ' + type + ' show';
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+
+            // Add real-time email validation
+            const emailError = document.getElementById('email-error');
+            
+            function showEmailError(message) {
+                emailError.textContent = message;
+                emailError.classList.add('show');
+                emailInput.classList.add('error');
+            }
+
+            function hideEmailError() {
+                emailError.classList.remove('show');
+                emailInput.classList.remove('error');
+            }
+
+            emailInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    const result = isValidEmail(this.value);
+                    if (!result.isValid) {
+                        showEmailError(result.message);
+                    } else {
+                        hideEmailError();
+                    }
+                } else {
+                    hideEmailError();
+                }
+            });
+
+            emailInput.addEventListener('blur', function() {
+                if (this.value.length > 0) {
+                    const result = isValidEmail(this.value);
+                    if (!result.isValid) {
+                        showEmailError(result.message);
+                    } else {
+                        hideEmailError();
+                    }
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Validate email before submission
+                const emailResult = isValidEmail(emailInput.value);
+                if (!emailResult.isValid) {
+                    showNotification(emailResult.message, 'error');
+                    return;
+                }
+
+                // Show success message
+                showNotification('Support ticket submitted successfully!', 'success');
+
+                // Clear form
+                form.reset();
+
+                // Hide notification after 3 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+
+                // Show checkmark overlay
+                document.body.classList.add('form-submitted');
+                setTimeout(() => {
+                    document.body.classList.remove('form-submitted');
+                }, 2000);
+
+                // In a real application, you would send the form data to a server here
+                console.log('Form submitted with following data:');
+                console.log('Name:', form.name.value);
+                console.log('Email:', form.email.value);
+                console.log('Order Number:', form.orderNumber.value);
+                console.log('Category:', form.category.value);
+                console.log('Message:', form.message.value);
+            });
+        });
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="HomePage.html" class="logo-container">
+                <div class="logo-img">
+                    <img src="images/ztt-logo.png" alt="ZTT Computers Logo">
+                </div>
+                <span class="logo-text">ZTT Computers</span>
+            </a>
+            <div class="nav-links">
+                <a href="HomePage.html">Home</a>
+                <a href="ShopPage.html">Shop</a>
+                <a href="BuildHelp.html">Custom Builds</a>
+                <a href="SupportPage.html">Support</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="support-header">
+        <h1>Customer Support</h1>
+        <p>We're here to help with any questions or issues you might have</p>
+    </div>
+
+    <div class="support-options">
+        <div class="support-card">
+            <div class="support-icon">
+                <img src="images/tech-support.png" alt="Technical Support Icon">
+            </div>
+            <h3>Technical Support</h3>
+            <p>Get help with PC issues, hardware problems, and system optimization</p>
+        </div>
+        <div class="support-card">
+            <div class="support-icon">
+                <img src="images/warranty.png" alt="Warranty Icon">
+            </div>
+            <h3>Warranty Claims</h3>
+            <p>Submit warranty claims and get information about our warranty policy</p>
+        </div>
+        <div class="support-card">
+            <div class="support-icon">
+                <img src="images/repair.png" alt="Repairs Icon">
+            </div>
+            <h3>Returns & Repairs</h3>
+            <p>Learn about our return policy and repair services</p>
+        </div>
+    </div>
+
+    <section class="contact-form">
+        <h2>Contact Support</h2>
+        <form id="supportForm">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" id="email-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="orderNumber">Order Number (if applicable)</label>
+                <input type="text" id="orderNumber" name="orderNumber">
+            </div>
+            <div class="form-group">
+                <label for="category">Support Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Select a category</option>
+                    <option value="technical">Technical Support</option>
+                    <option value="warranty">Warranty Claim</option>
+                    <option value="returns">Returns & Repairs</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">Describe Your Issue</label>
+                <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="submit-button">Submit Support Ticket</button>
+        </form>
+    </section>
+
+    <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <div class="faq-question">How long is the warranty period for your PCs?</div>
+            <div class="faq-answer">All our custom-built PCs come with a standard 2-year warranty. Gaming PCs include an extended 3-year warranty on major components.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Do you offer on-site support in Southampton?</div>
+            <div class="faq-answer">Yes, we provide on-site technical support within Southampton and surrounding areas. Service charges may apply based on location and type of support needed.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">What's included in your build service?</div>
+            <div class="faq-answer">Our build service includes component selection, professional assembly, extensive testing, Windows installation, and basic software setup. We also provide a detailed build report.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">How do I claim warranty?</div>
+            <div class="faq-answer">To claim warranty, simply fill out our support form with your order number and issue description. Our team will respond within 24 hours with next steps.</div>
+        </div>
+    </section>
+
+    <section class="warranty-section">
+        <div class="warranty-content">
+            <h2>Our Warranty Policy</h2>
+            <p>We stand behind the quality of our builds with comprehensive warranty coverage.</p>
+            <ul class="warranty-list">
+                <li>2-year standard warranty on all custom builds</li>
+                <li>3-year extended warranty on gaming PCs</li>
+                <li>1-year warranty on refurbished systems</li>
+                <li>Free labor for warranty repairs</li>
+                <li>Parts replacement with equivalent or better components</li>
+                <li>Local pickup and delivery for warranty services</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="contact-info">
+        <h3>Get in Touch</h3>
+        <div class="contact-method">
+            <strong>Email:</strong> s002809@shcg.ac.uk
+        </div>
+        <div class="contact-method">
+            <strong>Phone:</strong> No im not putting my phone number here
+        </div>
+        <div class="contact-method">
+            <strong>Hours:</strong> Monday-Saturday, 9:00 AM - 6:00 PM
+        </div>
+        <div class="contact-method">
+            <strong>Location:</strong> Southampton, Hampshire
+        </div>
+    </div>
+</body>
+</html>
